@@ -12,7 +12,7 @@ public class CreateCurrencyTable : Migration
         Create.Table("currency")
             .WithColumn("id").AsGuid().PrimaryKey()
             .WithColumn("name").AsString(100).NotNullable()
-            .WithColumn("rate").AsDecimal(18, 4).NotNullable();
+            .WithColumn("rate").AsDecimal(28, 12).NotNullable();
     }
 
     public override void Down()
