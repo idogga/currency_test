@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DbMigrator/DbMigrator.csproj" />
+    <Project Path="src/FinanceService/FinanceService.csproj" />
+    <Project Path="src/PersonService/PersonService.csproj" />
+  </Folder>
+</Solution>
