@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.OData;
 using FinanceService.Application.Queries;
 using Microsoft.OpenApi.Models;
 using NetDevPack.Security.JwtExtensions;
+using System.Text.Json;
+using FinanceService.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -22,7 +24,7 @@ var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<Jw
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
             .UseSnakeCaseNamingConvention());
-builder.Services.AddAutoMapper(typeof(CurrencyProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(CurrencyProfile));
 builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 Console.WriteLine($"JWT Authority: {jwtOptions.Authority}, JWT Audience: {jwtOptions.Audience}, JWT Issuer: {jwtOptions.Issuer}");
 builder.Services
@@ -86,10 +88,14 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var modelBuilder = new ODataConventionModelBuilder();
-modelBuilder.EntitySet<CurrencyDto>("Currencies").EntityType.HasKey(c => c.Id);
+modelBuilder.EntitySet<Currency>("Currencies").EntityType.HasKey(c => c.Id);
 var edmModel = modelBuilder.GetEdmModel();
 
 builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    })
     .AddOData(options =>
     {
         options.Select().Filter().OrderBy().Count().Expand().SetMaxTop(100);
@@ -115,3 +121,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
