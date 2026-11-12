@@ -57,8 +57,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "User Service v1");
     options.RoutePrefix = "swagger";
+    options.SwaggerEndpoint("v1/swagger.json", "User Service v1");
     options.DisplayRequestDuration();
     options.EnableDeepLinking();
 });

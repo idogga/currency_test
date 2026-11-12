@@ -30,7 +30,6 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Микросервис пользователей."
     });
 
-    // JWT Bearer в UI
     var jwtScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -52,7 +51,6 @@ builder.Services.AddSwaggerGen(options =>
         { jwtScheme, Array.Empty<string>() }
     });
 
-    // Подключаем XML-комментарии, если включите их в csproj
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -88,8 +86,8 @@ app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "User Service v1");
     options.RoutePrefix = "swagger";
+    options.SwaggerEndpoint("v1/swagger.json", "User Service v1");
     options.DisplayRequestDuration();
     options.EnableDeepLinking();
 });

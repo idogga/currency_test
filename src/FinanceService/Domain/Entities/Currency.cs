@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace FinanceService.Domain.Entities;
 
 /// <summary>
 /// Валюта.
 /// </summary>
+[Table("currency")]
 public sealed class Currency
 {
     /// <summary>

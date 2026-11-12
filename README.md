@@ -21,6 +21,26 @@
 docker compose -f ./deploy/docker-compose.yaml up --build
 ```
 
+## Получение валют через OData
+
+`FinanceService` предоставляет список валют по адресу `http://localhost:8081/odata/Currencies` при запуске через Docker Compose. Для локального запуска сервиса используйте адрес и порт из профиля запуска. Эндпоинт требует JWT: сначала получите токен через `POST http://localhost:8080/api/users/login`, затем передавайте его в заголовке `Authorization: Bearer <JWT>`.
+
+В запросах доступны поля `Id`, `Name`, `Rate`. Поддерживаются параметры `$select`, `$filter`, `$orderby`, `$count`, `$expand` и `$top`; максимальное значение `$top` — 100. Примеры ниже можно выполнять в REST Client для VS Code:
+
+```http
+@financeUrl = http://localhost:8081
+@token = <JWT>
+
+### 1. Получить все валюты
+GET {{financeUrl}}/odata/Currencies
+Authorization: Bearer {{token}}
+
+### 2. Найти валюты с курсом выше 50 рублей и отсортировать по убыванию курса
+GET {{financeUrl}}/odata/Currencies?$filter=Rate gt 50&$orderby=Rate desc
+Authorization: Bearer {{token}}
+
+```
+
 # Допущения
 - Решение запускается локально или в тестовом окружении с помощью Docker Compose. Учётные данные PostgreSQL и JWT, указанные в конфигурации, предназначены только для разработки и не должны использоваться в production.
 - При первом запуске PostgreSQL создаются базы `users` и `financy`, после чего `DbMigrator` применяет миграции. Скрипт начальной инициализации PostgreSQL выполняется только при создании пустого Docker volume. Если базы уже созданы, изменение `init-db.sql` само по себе их не пересоздаст.
