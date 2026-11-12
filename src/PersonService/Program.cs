@@ -1,12 +1,13 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PersonService.Common.Interfaces;
 using PersonService.Common.Mapping;
 using PersonService.Common.Services;
 using PersonService.Infrastructure.Persistence;
 using PersonService.Interfaces;
+using NetDevPack.Security.Jwt.Store.FileSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -19,7 +20,6 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -61,7 +61,8 @@ builder.Services.AddSwaggerGen(options =>
         options.IncludeXmlComments(xmlPath);
     }
 });
-var jwtKey = builder.Configuration["Jwt:Key"]!;
+var rsaKeyProvider = new RsaKeyProvider();
+builder.Services.AddSingleton<IKeyProvider>(rsaKeyProvider);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -73,24 +74,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnTokenValidated = context =>
-            {
-                var blacklist = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistService>();
-                var jti = context.Principal?.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)?.Value;
-                if (jti is not null && blacklist.IsBlacklisted(jti))
-                {
-                    context.Fail("Token is blacklisted.");
-                }
-                return Task.CompletedTask;
-            }
         };
     });
-
+builder.Services.AddJwksManager()
+    .PersistKeysInMemory()
+    .UseJwtValidation();
 builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
@@ -108,6 +96,7 @@ app.UseSwaggerUI(options =>
 });
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseJwksDiscovery();
 app.MapHealthChecks("/health");
 app.MapControllers();
 
