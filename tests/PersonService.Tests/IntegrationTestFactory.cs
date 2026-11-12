@@ -1,4 +1,3 @@
-// IntegrationTestFactory.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -12,15 +11,29 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace PersonService.Tests;
 
+/// <summary>
+/// Фабрика для создания интеграционных тестов.
+/// </summary>
 public class IntegrationTestFactory : WebApplicationFactory<Program>
 {
+    /// <summary>
+    /// Тестовый Issuer.
+    /// </summary>
     public const string TestIssuer = "UserService";
+
+    /// <summary>
+    /// Тестовый Audience.
+    /// </summary>
     public const string TestAudience = "UserServiceClients";
 
+    /// <summary>
+    /// Строка подключения к базе данных.
+    /// </summary>
     private readonly string _connectionString;
 
     public IntegrationTestFactory(string connectionString) => _connectionString = connectionString;
 
+    /// <inheritdoc/>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
@@ -37,7 +50,6 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // Заменяем DbContext на тестовую БД
             var toRemove = services
                 .Where(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>)
                          || d.ServiceType == typeof(AppDbContext))
@@ -46,7 +58,6 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<AppDbContext>(o => o.UseNpgsql(_connectionString));
 
-            // Создаём схему
             using var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
             scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.EnsureCreated();
@@ -75,15 +86,11 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
 
-                        // В интеграционных тестах проверяем бизнес-логику,
-                        // а не криптографию. Реальную подпись тестируем
-                        // отдельным классом JwtFlowTests.
                         ValidateIssuerSigningKey = false,
                         SignatureValidator = (token, _) =>
                             new Microsoft.IdentityModel.JsonWebTokens.JsonWebToken(token)
                     };
 
-                    // Не перезаписываем наши TVP настройками NetDevPack
                     options.ConfigurationManager = null;
                 });
         });

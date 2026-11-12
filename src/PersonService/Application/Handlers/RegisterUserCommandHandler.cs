@@ -4,28 +4,33 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using NetDevPack.Security.Jwt.Core.Interfaces;
-using PersonService.Dtos;
+using PersonService.Application.Dtos;
+using PersonService.Commands.Register;
+using PersonService.Domain.Entities;
+using PersonService.Domain.Interfaces;
 using PersonService.Infrastructure.Persistence;
-using PersonService.Interfaces;
 
-namespace PersonService.Commands.Login;
+namespace PersonService.Application.Handlers;
 
 /// <summary>
-/// Обработчик команды входа пользователя в систему.
+/// Обработчик команды регистрации нового пользователя.
 /// </summary>
-public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, AuthResponseDto>
 {
     /// <summary>
     /// Контекст базы данных для работы с пользователями.
     /// </summary>
     private readonly AppDbContext _db;
 
-    private readonly IJwtService _jwtService;
+    /// <summary>
+    /// Сервис для хэширования паролей.
+    /// </summary>
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IJwtService _jwtService;
     private readonly IConfiguration _configuration;
 
-    public LoginCommandHandler(AppDbContext db, IPasswordHasher passwordHasher, IJwtService jwtService,
-        IConfiguration configuration)
+
+    public RegisterUserCommandHandler(AppDbContext db, IPasswordHasher passwordHasher, IJwtService jwtService, IConfiguration configuration)
     {
         _db = db;
         _passwordHasher = passwordHasher;
@@ -34,15 +39,24 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
     }
 
     /// <inheritdoc />
-    public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponseDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _db.Users.SingleOrDefaultAsync(u => u.Name == request.Name, cancellationToken);
-        if (user is null || !_passwordHasher.Verify(request.Password, user.Password))
-            throw new UnauthorizedAccessException("Invalid credentials.");
+        if (await _db.Users.AnyAsync(u => u.Name == request.Name, cancellationToken))
+            throw new InvalidOperationException("User with this name already exists.");
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name,
+            Password = _passwordHasher.Hash(request.Password)
+        };
+
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync(cancellationToken);
+
 
         var now = DateTime.UtcNow;
         var expiresAt = now.AddHours(1);
-
         var signingCredentials = await _jwtService.GetCurrentSigningCredentials();
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -63,7 +77,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
         var handler = new JsonWebTokenHandler();
         var token = handler.CreateToken(tokenDescriptor);
-
         return new AuthResponseDto(token, expiresAt);
     }
 }

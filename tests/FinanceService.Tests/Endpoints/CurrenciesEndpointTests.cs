@@ -1,16 +1,16 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json.Serialization;
-using AppDbContext = FinanceService.Infrastructure.Persistence.AppDbContext;
 using Bogus;
 using FinanceService.Domain.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using FinanceService.Tests.Fixtures;
 using FinanceService.Application.Dtos;
 
 namespace FinanceService.Tests.Endpoints;
 
+/// <summary>
+/// Тесты для эндпоинтов валют.
+/// </summary>
 [Collection(PostgresCollection.Name)]
 public class CurrenciesEndpointTests : IntegrationTestBase
 {
@@ -19,15 +19,20 @@ public class CurrenciesEndpointTests : IntegrationTestBase
 
     }
 
+    /// <summary>
+    ///  Фейкер для генерации тестовых данных валют.
+    /// </summary>
     private readonly Faker<Currency> _currencyFaker = new Faker<Currency>()
         .RuleFor(c => c.Id, f => Guid.NewGuid())
         .RuleFor(c => c.Name, f => f.Finance.Currency().Code)
         .RuleFor(c => c.Rate, f => f.Finance.Amount(1, 200));
 
+    /// <summary>
+    /// Аутентификация клиента с использованием тестового токена.
+    /// </summary>
     private void Authenticate() =>
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
 
-    // ---------- 1. Без токена → 401 ----------
     [Fact]
     public async Task GetCurrencies_WithoutAuth_ReturnsUnauthorized()
     {
@@ -35,7 +40,6 @@ public class CurrenciesEndpointTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    // ---------- 2. С токеном, пустая БД → 200, пустой массив ----------
     [Fact]
     public async Task GetCurrencies_WithAuth_EmptyDb_ReturnsEmpty()
     {
@@ -49,7 +53,6 @@ public class CurrenciesEndpointTests : IntegrationTestBase
         Assert.Empty(payload!);
     }
 
-    // ---------- 3. С токеном и данными → 200, все валюты ----------
     [Fact]
     public async Task GetCurrencies_WithAuthAndData_ReturnsAll()
     {
@@ -58,8 +61,7 @@ public class CurrenciesEndpointTests : IntegrationTestBase
         Authenticate();
 
         var response = await Client.GetAsync("/odata/Currencies");
-        var a = await response.Content.ReadAsStringAsync();
-
+        
         response.EnsureSuccessStatusCode();
         var payload = await response.Content.ReadFromJsonAsync<List<CurrencyDto>>();
         Assert.NotNull(payload);
@@ -69,7 +71,6 @@ public class CurrenciesEndpointTests : IntegrationTestBase
             payload.Select(c => c.Name).OrderBy(n => n));
     }
 
-    // ---------- 4. OData $filter → только подходящие записи ----------
     [Fact]
     public async Task GetCurrencies_WithFilter_ReturnsFiltered()
     {
@@ -87,7 +88,6 @@ public class CurrenciesEndpointTests : IntegrationTestBase
         Assert.Equal("EXPENSIVE", item.Name);
     }
 
-    // ---------- 5. OData $orderby + $top → сортировка и ограничение ----------
     [Fact]
     public async Task GetCurrencies_WithOrderByAndTop_ReturnsOrderedAndLimited()
     {

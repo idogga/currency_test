@@ -1,20 +1,35 @@
 using System.Net;
 using System.Net.Http.Json;
+using PersonService.Application.Dtos;
 using PersonService.Common.Services;
-using PersonService.Dtos;
-using PersonService.Models;
-using PersonService.Tests;
+using PersonService.Domain.Entities;
 using PersonService.Tests.Fixtures;
 
 namespace PersonService.Tests.Endpoints;
 
+/// <summary>
+/// Тесты для эндпоинта логина.
+/// </summary>
 [Collection(PostgresCollection.Name)]
 public class LoginEndpointTests : IntegrationTestBase
 {
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="LoginEndpointTests"/>.
+    /// </summary>
+    /// <param name="fixture"></param>
     public LoginEndpointTests(PostgresFixture fixture) : base(fixture) { }
 
+    /// <summary>
+    /// Запрос для логина.
+    /// </summary>
+    /// <param name="Name">Имя пользователя.</param>
+    /// <param name="Password">Пароль пользователя.</param>
     private record LoginRequest(string Name, string Password);
 
+    /// <summary>
+    /// Создает и сохраняет пользователя в тестовой базе данных, возвращая его имя и пароль.
+    /// </summary>
+    /// <returns>Имя и пароль пользователя.</returns>
     private async Task<(string Name, string Password)> SeedUserAsync()
     {
         var hasher = new PasswordHasher();

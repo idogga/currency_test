@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PersonService.Common.Interfaces;
-using PersonService.Common.Mapping;
 using PersonService.Common.Services;
 using PersonService.Infrastructure.Persistence;
-using PersonService.Interfaces;
 using NetDevPack.Security.Jwt.Store.FileSystem;
+using PersonService.Application.Mapping;
+using PersonService.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration

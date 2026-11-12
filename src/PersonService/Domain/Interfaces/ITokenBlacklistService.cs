@@ -1,4 +1,4 @@
-namespace PersonService.Interfaces;
+namespace PersonService.Domain.Interfaces;
 
 /// <summary>
 /// Интерфейс для работы с черным списком токенов.

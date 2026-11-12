@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PersonService.Models;
+namespace PersonService.Domain.Entities;
 
 /// <summary>
 /// Пользователь.

@@ -1,19 +1,35 @@
-// TestAuthHandler.cs
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PersonService.Interfaces;
+using PersonService.Domain.Interfaces;
 
 namespace PersonService.Tests;
 
+/// <summary>
+/// Хэндлер для тестовой авторизации.
+/// </summary>
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
+    /// <summary>
+    /// Название схемы.
+    /// </summary>
     public const string SchemeName = "Test";
+
+    /// <summary>
+    /// Название хэдера для User-Id.
+    /// </summary>
     public const string UserIdHeader = "X-Test-UserId";
+
+    /// <summary>
+    /// Название хэдера для Оеш.
+    /// </summary>
     public const string JtiHeader = "X-Test-Jti";
 
+    /// <summary>
+    /// Сервис для работы с заблокированными токенами.
+    /// </summary>
     private readonly ITokenBlacklistService _blacklist;
 
     public TestAuthHandler(
@@ -45,7 +61,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         {
             new Claim("sub", Request.Headers[UserIdHeader]!),
             new Claim("jti", jti),
-            new Claim("exp", expiresAt)   // ← критично: контроллер требует exp
+            new Claim("exp", expiresAt)
         };
 
         var identity = new ClaimsIdentity(claims, SchemeName);

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PersonService.Common.Interfaces;
+namespace PersonService.Domain.Interfaces;
 
 /// <summary>
 /// Интерфейс для получения публичного ключа RSA, используемого для подписи JWT-токенов.

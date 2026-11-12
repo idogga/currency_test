@@ -1,4 +1,3 @@
-// Tests/Infrastructure/TestAuthHandler.cs
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
@@ -7,14 +6,24 @@ using Microsoft.Extensions.Options;
 
 namespace FinanceService.Tests;
 
+/// <summary>
+/// Обработчик аутентификации для тестов, который имитирует успешную аутентификацию.
+/// </summary>
 public sealed class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
+    /// <summary>
+    /// Имя схемы аутентификации для тестов.
+    /// </summary>
     public const string SchemeName = "Test";
 
+    /// <summary>
+    /// Обрабатывает аутентификацию, возвращая успешный результат с фиктивным пользователем.
+    /// </summary>
+    /// <returns><see cref="AuthenticateResult"/></returns>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!Request.Headers.ContainsKey("Authorization"))

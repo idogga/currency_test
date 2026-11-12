@@ -1,5 +1,5 @@
 using MediatR;
-using PersonService.Dtos;
+using PersonService.Application.Dtos;
 
 namespace PersonService.Commands.Register;
 

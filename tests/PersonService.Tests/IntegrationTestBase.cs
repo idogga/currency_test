@@ -1,5 +1,3 @@
-// IntegrationTestBase.cs
-using System.Net.Http.Json;
 using System.Security.Claims;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
@@ -7,19 +5,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using NetDevPack.Security.Jwt.Core.Interfaces;
-using PersonService.Dtos;
 using PersonService.Infrastructure.Persistence;
 using PersonService.Tests.Fixtures;
 
 namespace PersonService.Tests;
 
+/// <summary>
+/// Базовый класс для интеграционных тестов.
+/// </summary>
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
+    /// <summary>
+    /// Фабрика для создания тестового приложения.
+    /// </summary>
     protected readonly IntegrationTestFactory Factory;
+
+    /// <summary>
+    /// Клиент для запросов.
+    /// </summary>
     protected readonly HttpClient Client;
+
+    /// <summary>
+    /// Конекст базы данных.
+    /// </summary>
     protected readonly AppDbContext Db;
+
+    /// <summary>
+    /// Фейкер для создания данных.
+    /// </summary>
     protected readonly Faker Faker = new();
+
+    /// <summary>
+    /// Сервис управления JWT.
+    /// </summary>
     protected readonly IJwtService JwtService;
+
+    /// <summary>
+    /// Начальный scope.
+    /// </summary>
     private readonly IServiceScope _scope;
 
     protected IntegrationTestBase(PostgresFixture fixture)
@@ -31,33 +54,24 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         JwtService = _scope.ServiceProvider.GetRequiredService<IJwtService>();
     }
 
+    /// <summary>
+    /// Инициализация тестов.
+    /// </summary>
+    /// <returns></returns>
     public virtual Task InitializeAsync() => Task.CompletedTask;
 
-    // ---- Хелперы для работы с JWT ----
-
-    /// <summary>Регистрирует нового пользователя и возвращает токен.</summary>
-    protected async Task<string> RegisterAndGetTokenAsync(
-        string? name = null, string? password = null)
-    {
-        name ??= Faker.Internet.UserName();
-        password ??= "Password123!";
-
-        var response = await Client.PostAsJsonAsync("/api/users",
-            new { Name = name, Password = password });
-        response.EnsureSuccessStatusCode();
-
-        var body = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-        return body!.Token;
-    }
-
-    /// <summary>Ставит Authorization: Bearer на клиент.</summary>
+    /// <summary>
+    /// Ставит Authorization: Bearer на клиент.
+    /// </summary>
     protected void AuthorizeWith(string token)
     {
         Client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 
-    /// <summary>Убирает токен с клиента.</summary>
+    /// <summary>
+    /// Убирает токен с клиента.
+    /// </summary>
     protected void Unauthorize() => Client.DefaultRequestHeaders.Authorization = null;
 
     public async Task DisposeAsync()

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
-using PersonService.Common.Interfaces;
+using PersonService.Domain.Interfaces;
 
 namespace PersonService.Common.Services;
 

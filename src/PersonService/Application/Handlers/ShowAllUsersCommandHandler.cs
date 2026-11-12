@@ -1,14 +1,15 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using PersonService.Application.Queries;
+using PersonService.Domain.Entities;
 using PersonService.Infrastructure.Persistence;
-using PersonService.Models;
 
-namespace PersonService.Commands.ShowAllUsers;
+namespace PersonService.Application.Handlers;
 
 /// <summary>
 /// Обработчик команды получения списка всех пользователей.
 /// </summary>
-public class ShowAllUsersCommandHandler : IRequestHandler<ShowAllUsersCommand, IList<User>>
+public class ShowAllUsersCommandHandler : IRequestHandler<ShowAllUsersQuery, IList<User>>
 {
     /// <summary>
     /// Контекст базы данных для работы с пользователями.
@@ -21,7 +22,7 @@ public class ShowAllUsersCommandHandler : IRequestHandler<ShowAllUsersCommand, I
     }
 
     /// <inheritdoc />
-    public async Task<IList<User>> Handle(ShowAllUsersCommand request, CancellationToken cancellationToken)
+    public async Task<IList<User>> Handle(ShowAllUsersQuery request, CancellationToken cancellationToken)
     {
         var users = await _db.Users.ToListAsync(cancellationToken);
         return users;

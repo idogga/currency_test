@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
-using PersonService.Interfaces;
+using PersonService.Domain.Interfaces;
 
 namespace PersonService.Common.Services;
 

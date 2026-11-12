@@ -1,16 +1,24 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Identity;
-using PersonService.Dtos;
+using PersonService.Application.Dtos;
 using PersonService.Tests.Fixtures;
 
 namespace PersonService.Tests.Endpoints;
 
+/// <summary>
+/// Тесты для эндпоинта регистрации.
+/// </summary>
 [Collection(PostgresCollection.Name)]
 public class RegisterEndpointTests : IntegrationTestBase
 {
     public RegisterEndpointTests(PostgresFixture fixture) : base(fixture) { }
 
+/// <summary>
+/// Запрос для регистрации нового пользователя.
+/// </summary>
+/// <param name="Name">Имя пользователя.</param>
+/// <param name="Password">Пароль пользователя.</param>
     private record RegisterRequest(string Name, string Password);
 
     [Fact]

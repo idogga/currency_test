@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 using FinanceService.Application.Dtos;
 using FinanceService.Application.Queries;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper.AspNet.OData;
 using FinanceService.Domain.Entities;
 
 namespace FinanceService.API.Controllers;

@@ -4,11 +4,11 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PersonService.Application.Dtos;
+using PersonService.Application.Queries;
 using PersonService.Commands.Login;
 using PersonService.Commands.Logout;
 using PersonService.Commands.Register;
-using PersonService.Commands.ShowAllUsers;
-using PersonService.Dtos;
 
 namespace PersonService.Web;
 
@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
     [HttpGet()]
     public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken)
     {
-        var users = await _mediator.Send(new ShowAllUsersCommand(), cancellationToken);
+        var users = await _mediator.Send(new ShowAllUsersQuery(), cancellationToken);
         var userDtos = users.Select(_mapper.Map<UserDto>).ToList();
         return Ok(userDtos);
     }

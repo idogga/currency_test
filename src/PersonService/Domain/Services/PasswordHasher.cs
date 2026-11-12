@@ -1,4 +1,4 @@
-using PersonService.Interfaces;
+using PersonService.Domain.Interfaces;
 
 namespace PersonService.Common.Services;
 

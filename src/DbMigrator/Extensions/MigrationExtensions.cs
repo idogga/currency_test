@@ -1,6 +1,5 @@
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DbMigrator.Extensions;
 

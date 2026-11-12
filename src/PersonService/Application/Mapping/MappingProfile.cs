@@ -1,8 +1,8 @@
 using AutoMapper;
-using PersonService.Dtos;
-using PersonService.Models;
+using PersonService.Application.Dtos;
+using PersonService.Domain.Entities;
 
-namespace PersonService.Common.Mapping;
+namespace PersonService.Application.Mapping;
 
 /// <summary>
 /// Профиль для настройки маппинга между сущностями и DTO.

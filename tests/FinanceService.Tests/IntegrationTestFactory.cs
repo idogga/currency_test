@@ -11,15 +11,32 @@ using FinanceService.Infrastructure.Persistence;
 
 namespace FinanceService.Tests;
 
+/// <summary>
+/// Фабрика для интеграционных тестов.
+/// </summary>
 public class IntegrationTestFactory : WebApplicationFactory<Program>
 {
+    /// <summary>
+    /// Имя тестового издателя JWT.
+    /// </summary>
     public const string TestIssuer = "UserService";
+
+    /// <summary>
+    /// Имя тестовой аудитории JWT.
+    /// </summary>
     public const string TestAudience = "UserServiceClients";
 
+    /// <summary>
+    /// Фабрика для интеграционных тестов.
+    /// </summary>
     private readonly string _connectionString;
 
     public IntegrationTestFactory(string connectionString) => _connectionString = connectionString;
 
+    /// <summary>
+    /// Конфигурирует веб-хост для интеграционных тестов.
+    /// </summary>
+    /// <param name="builder"></param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");

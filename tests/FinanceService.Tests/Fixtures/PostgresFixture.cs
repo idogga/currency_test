@@ -7,6 +7,9 @@ namespace FinanceService.Tests.Fixtures;
 /// </summary>
 public class PostgresFixture : IAsyncLifetime
 {
+    /// <summary>
+    /// Контейнер с PostgreSQL для тестов.
+    /// </summary>
     private PostgreSqlContainer _container = null!;
 
     /// <summary>

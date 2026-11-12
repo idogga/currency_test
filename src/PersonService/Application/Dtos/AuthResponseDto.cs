@@ -1,4 +1,4 @@
-namespace PersonService.Dtos;
+namespace PersonService.Application.Dtos;
 
 /// <summary>
 /// DTO для передачи информации о пользователе после аутентификации.

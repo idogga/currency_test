@@ -1,11 +1,11 @@
-// Endpoints/LogoutEndpointTests.cs
 using System.Net;
-using PersonService.Models;
 using PersonService.Tests.Fixtures;
-using Xunit;
 
 namespace PersonService.Tests.Endpoints;
 
+/// <summary>
+/// Тесты для эндпоинта логаута.
+/// </summary>
 [Collection(PostgresCollection.Name)]
 public class LogoutEndpointTests : IntegrationTestBase
 {

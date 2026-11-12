@@ -1,23 +1,40 @@
-// IntegrationTestBase.cs
-using System.Net.Http.Json;
-using System.Security.Claims;
 using Bogus;
 using FinanceService.Domain.Entities;
 using FinanceService.Infrastructure.Persistence;
 using FinanceService.Tests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FinanceService.Tests;
 
+/// <summary>
+/// Базовый класс для интеграционных тестов.
+/// </summary>
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
+    /// <summary>
+    /// Фабрика для создания тестового приложения.
+    /// </summary>
     protected readonly IntegrationTestFactory Factory;
+
+    /// <summary>
+    /// HTTP-клиент для отправки запросов к тестовому приложению.
+    /// </summary>
     protected readonly HttpClient Client;
+
+    /// <summary>
+    /// Контекст базы данных для взаимодействия с тестовой БД.
+    /// </summary>
     protected readonly AppDbContext Db;
+
+    /// <summary>
+    /// Фейкер для генерации тестовых данных.
+    /// </summary>
     protected readonly Faker Faker = new();
+
+    /// <summary>
+    /// Сервисный скоуп для управления временем жизни сервисов.
+    /// </summary>
     private readonly IServiceScope _scope;
 
     protected IntegrationTestBase(PostgresFixture fixture)
@@ -28,9 +45,15 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         Db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
     }
 
+    /// <summary>
+    /// Инициализация тестов.
+    /// </summary>
+    /// <returns></returns>
     public virtual Task InitializeAsync() => Task.CompletedTask;
 
-    /// <summary>Убирает токен с клиента.</summary>
+    /// <summary>
+    /// Убирает токен с клиента.
+    /// </summary>
     protected void Unauthorize() => Client.DefaultRequestHeaders.Authorization = null;
 
     public async Task DisposeAsync()
@@ -49,6 +72,11 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         }
     }
 
+    /// <summary>
+    /// Сохраняет переданные валюты в тестовую базу данных.
+    /// </summary>
+    /// <param name="currencies">Набор валют для сохранения.</param>
+    /// <returns></returns>
     protected async Task SeedAsync(params Currency[] currencies)
     {
         using var scope = Factory.Services.CreateScope();

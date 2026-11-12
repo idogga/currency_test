@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PersonService.Models;
-
+using PersonService.Domain.Entities;
 
 namespace PersonService.Infrastructure.Persistence;
 

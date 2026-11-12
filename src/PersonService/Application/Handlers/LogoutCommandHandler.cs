@@ -1,7 +1,8 @@
 using MediatR;
-using PersonService.Interfaces;
+using PersonService.Commands.Logout;
+using PersonService.Domain.Interfaces;
 
-namespace PersonService.Commands.Logout;
+namespace PersonService.Application.Handlers;
 
 /// <summary>
 /// Обработчик команды выхода пользователя из системы.
