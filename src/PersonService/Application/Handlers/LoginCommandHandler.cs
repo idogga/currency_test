@@ -34,7 +34,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
         _configuration = configuration;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Проверяет учетные данные пользователя и создает JWT-токен.
+    /// </summary>
+    /// <param name="request">Команда с именем пользователя и паролем.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Токен доступа и время его истечения.</returns>
     public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _db.Users.SingleOrDefaultAsync(u => u.Name == request.Name, cancellationToken);

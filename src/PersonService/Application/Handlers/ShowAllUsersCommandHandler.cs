@@ -21,7 +21,12 @@ public class ShowAllUsersCommandHandler : IRequestHandler<ShowAllUsersQuery, ILi
         _db = db;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Загружает из базы данных всех пользователей.
+    /// </summary>
+    /// <param name="request">Запрос списка пользователей.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Список пользователей.</returns>
     public async Task<IList<User>> Handle(ShowAllUsersQuery request, CancellationToken cancellationToken)
     {
         var users = await _db.Users.ToListAsync(cancellationToken);

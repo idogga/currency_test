@@ -38,7 +38,12 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         _configuration = configuration;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Создает пользователя с хэшированным паролем и выдает JWT-токен.
+    /// </summary>
+    /// <param name="request">Команда с именем пользователя и паролем.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Токен доступа и время его истечения.</returns>
     public async Task<AuthResponseDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         if (await _db.Users.AnyAsync(u => u.Name == request.Name, cancellationToken))

@@ -7,7 +7,12 @@ namespace PersonService.Infrastructure.Healthchecks;
 /// </summary>
 public class HealthCheck : IHealthCheck
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Возвращает успешный результат проверки состояния приложения.
+    /// </summary>
+    /// <param name="context">Контекст выполнения проверки состояния.</param>
+    /// <param name="cancellationToken">Токен отмены проверки.</param>
+    /// <returns>Результат, указывающий на работоспособное состояние приложения.</returns>
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context, CancellationToken cancellationToken = default)
     {

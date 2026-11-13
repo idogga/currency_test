@@ -16,7 +16,12 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
 
     public LogoutCommandHandler(ITokenBlacklistService blacklist) => _blacklist = blacklist;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Добавляет JWT пользователя в черный список.
+    /// </summary>
+    /// <param name="request">Команда с идентификатором и сроком действия токена.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Завершенная задача.</returns>
     public Task<Unit> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         _blacklist.AddToBlacklist(request.Jti, request.ExpiresAt);

@@ -12,6 +12,9 @@ using PersonService.Commands.Register;
 
 namespace PersonService.Web;
 
+/// <summary>
+/// Обрабатывает HTTP-запросы, связанные с пользователями.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
@@ -26,6 +29,11 @@ public class UsersController : ControllerBase
     /// </summary>
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// Создает контроллер пользователей.
+    /// </summary>
+    /// <param name="mediator">Посредник для отправки команд и запросов.</param>
+    /// <param name="mapper">Маппер для преобразования объектов.</param>
     public UsersController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
@@ -37,7 +45,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="command">Команда для регистрации пользователя.</param>
     /// <param name="cancellationToken">Токен отмены.</param>
-    /// <returns></returns>
+    /// <returns>Результат регистрации пользователя.</returns>
     [HttpPost()]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
@@ -64,7 +72,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="command">Команда для входа пользователя.</param>
     /// <param name="cancellationToken">Токен отмены.</param>
-    /// <returns></returns>
+    /// <returns>Результат входа пользователя.</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {
@@ -76,7 +84,7 @@ public class UsersController : ControllerBase
     /// Обрабатывает запрос на выход пользователя из системы.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены.</param>
-    /// <returns></returns>
+    /// <returns>Ответ без содержимого при успешном выходе или ошибку запроса при некорректном токене.</returns>
     [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
